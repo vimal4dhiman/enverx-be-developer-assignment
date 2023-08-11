@@ -20,6 +20,23 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 app.use(bodyParser.json());
 
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  next();
+};
+
+// Validation rules for each entry from user
+const validationRules = [
+  check("id").isLength({ min: 1 }).withMessage("ID is required"),
+  check("createDate").isISO8601().withMessage("Invalid createDate format"),
+  check("blogTitle").isLength({ min: 3 }).withMessage("Blog title is required"),
+  check("blog").isLength({ min: 10 }).withMessage("Blog content is required"),
+  check("author").isLength({ min: 1 }).withMessage("Author name is required"),
+];
+
 //Get all blog post using
 app.get("/posts", (req, res) => {
   const params = {
@@ -58,7 +75,7 @@ app.get("/posts/:id", (req, res) => {
 });
 
 // Create a new blog post
-app.post("/posts", (req, res) => {
+app.post("/posts", validationRules, validate, (req, res) => {
   const newPost = req.body;
 
   const params = {
@@ -78,7 +95,7 @@ app.post("/posts", (req, res) => {
 });
 
 // Update a blog post by ID
-app.put("/posts/:id", (req, res) => {
+app.put("/posts/:id", validationRules, validate, (req, res) => {
   const params = {
     TableName: config.database.TableName,
     Key: { id: req.params.id },
@@ -122,6 +139,15 @@ app.delete("/posts/:id", (req, res) => {
       res.json({ message: "Post deleted successfully" });
     }
   });
+});
+
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Endpoint not found" });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal server error" });
 });
 
 app.listen(PORT, (error) => {
