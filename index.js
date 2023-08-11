@@ -57,6 +57,26 @@ app.get("/posts/:id", (req, res) => {
   });
 });
 
+// Create a new blog post
+app.post("/posts", (req, res) => {
+  const newPost = req.body;
+
+  const params = {
+    TableName: config.database.TableName,
+    Item: newPost,
+  };
+
+  dynamodb.put(params, (err) => {
+    if (err) {
+      res
+        .status(500)
+        .json({ message: "An error occured while creating a post" });
+    } else {
+      res.status(201).json(newPost);
+    }
+  });
+});
+
 app.listen(PORT, (error) => {
   if (!error) {
     console.log("Server is running on port: ", PORT);
