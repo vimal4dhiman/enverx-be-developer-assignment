@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 //Get all blog post using
 app.get("/posts", (req, res) => {
   const params = {
-    TableName: "backend_engg_test",
+    TableName: config.database.TableName,
   };
 
   dynamodb.scan(params, (err, result) => {
@@ -31,6 +31,28 @@ app.get("/posts", (req, res) => {
       res.status(500).json({ message: "Error fetching posts" });
     } else {
       res.json(result.Items);
+    }
+  });
+});
+
+//Get a specific blog post by ID
+app.get("/posts/:id", (req, res) => {
+  const params = {
+    TableName: config.database.TableName,
+    Key: { id: req.params.id },
+  };
+
+  dynamodb.scan(params, (err, result) => {
+    if (err) {
+      res
+        .status(500)
+        .json({ message: "Error fetching post with id: " + params.Key.id });
+    } else if (!result.Item) {
+      res
+        .status(400)
+        .json({ message: "Post with id:" + params.Key.id + " not found" });
+    } else {
+      res.json(result.Item);
     }
   });
 });
