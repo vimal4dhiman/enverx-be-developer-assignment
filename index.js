@@ -77,6 +77,35 @@ app.post("/posts", (req, res) => {
   });
 });
 
+// Update a blog post by ID
+app.put("/posts/:id", (req, res) => {
+  const params = {
+    TableName: config.database.TableName,
+    Key: { id: req.params.id },
+    UpdateExpression:
+      "SET createDate = :createDate, blogTitle = :blogTitle, blog = :blog, author = :author",
+    ExpressionAttributeValues: {
+      ":createDate": req.body.createDate,
+      ":blogTitle": req.body.blogTitle,
+      ":blog": req.body.blog,
+      ":author": req.body.author,
+    },
+    ReturnValues: "ALL_NEW",
+  };
+
+  dynamodb.update(params, (err, data) => {
+    if (err) {
+      res.status(500).json({
+        message: "Error occured while updating post with id: " + params.Key.id,
+      });
+    } else if (!data.Attributes) {
+      res.status(404).json({ message: "Post not found" });
+    } else {
+      res.json(data.Attributes);
+    }
+  });
+});
+
 app.listen(PORT, (error) => {
   if (!error) {
     console.log("Server is running on port: ", PORT);
