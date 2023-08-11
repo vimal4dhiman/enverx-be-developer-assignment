@@ -106,6 +106,24 @@ app.put("/posts/:id", (req, res) => {
   });
 });
 
+// Delete a blog post by ID
+app.delete("/posts/:id", (req, res) => {
+  const params = {
+    TableName: config.database.TableName,
+    Key: { id: req.params.id },
+  };
+
+  dynamodb.delete(params, (err) => {
+    if (err) {
+      res.status(500).json({
+        message: "Error occured while deleting post with id: " + params.Key.id,
+      });
+    } else {
+      res.json({ message: "Post deleted successfully" });
+    }
+  });
+});
+
 app.listen(PORT, (error) => {
   if (!error) {
     console.log("Server is running on port: ", PORT);
