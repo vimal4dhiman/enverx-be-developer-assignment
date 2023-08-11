@@ -16,9 +16,24 @@ AWS.config.update({
 });
 
 // Setting up dyamodb client
-const dynamodb = AWS.DynamoDB.DocumentClient();
+const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 app.use(bodyParser.json());
+
+//Get all blog post using
+app.get("/posts", (req, res) => {
+  const params = {
+    TableName: "backend_engg_test",
+  };
+
+  dynamodb.scan(params, (err, result) => {
+    if (err) {
+      res.status(500).json({ message: "Error fetching posts" });
+    } else {
+      res.json(result.Items);
+    }
+  });
+});
 
 app.listen(PORT, (error) => {
   if (!error) {
