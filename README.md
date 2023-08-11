@@ -38,6 +38,16 @@ This is a simple CRUD (Create, Read, Update, Delete) blog application built usin
 5. Access the API. The API will be available at `http://localhost:3000`
 6. Use Postman or similar tool to test the APIs in local environment.
 
+### Sample JSON data
+
+    {
+        "id":"1",
+        "createDate" :"Fri Aug 11 2023 14:42:22 GMT+0530 (India Standard Time)",
+        "blogTitle": "Test Blog",
+        "blog": "This is a test blog",
+        "author": "ABC XYZ"
+    }
+
 ### API Endpoints
 
 - GET /posts: Retrieve all blog posts, sorted by date and title.
