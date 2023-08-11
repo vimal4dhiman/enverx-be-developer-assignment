@@ -36,6 +36,7 @@ This is a simple CRUD (Create, Read, Update, Delete) blog application built usin
    ```
 
 5. Access the API. The API will be available at `http://localhost:3000`
+6. Use Postman or similar tool to test the APIs in local environment.
 
 ### API Endpoints
 

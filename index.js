@@ -8,14 +8,18 @@ const PORT = 3000;
 
 const config = JSON.parse(fs.readFileSync("config.json"));
 
-// Configuring AWS SDK with credentials
+/*
+ * Configuring AWS SDK with credentials
+ */
 AWS.config.update({
   region: config.database.region,
   accessKeyId: config.database.accessKeyId,
   secretAccessKey: config.database.secretAccessKey,
 });
 
-// Setting up dyamodb client
+/**
+ * Setting up dyamodb client
+ */
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 app.use(bodyParser.json());
@@ -28,7 +32,9 @@ const validate = (req, res, next) => {
   next();
 };
 
-// Validation rules for each entry from user
+/**
+ * Validation rules for each entry from user
+ */
 const validationRules = [
   check("id").isLength({ min: 1 }).withMessage("ID is required"),
   check("createDate").isISO8601().withMessage("Invalid createDate format"),
@@ -37,7 +43,9 @@ const validationRules = [
   check("author").isLength({ min: 1 }).withMessage("Author name is required"),
 ];
 
-//Get all blog post using
+/**
+ * Get all blog post using
+ */
 app.get("/posts", (req, res) => {
   const params = {
     TableName: config.database.TableName,
@@ -52,7 +60,9 @@ app.get("/posts", (req, res) => {
   });
 });
 
-//Get a specific blog post by ID
+/**
+ * Get a specific blog post by ID
+ */
 app.get("/posts/:id", (req, res) => {
   const params = {
     TableName: config.database.TableName,
@@ -74,7 +84,9 @@ app.get("/posts/:id", (req, res) => {
   });
 });
 
-// Create a new blog post
+/**
+ * Create a new blog post
+ */
 app.post("/posts", validationRules, validate, (req, res) => {
   const newPost = req.body;
 
@@ -94,7 +106,9 @@ app.post("/posts", validationRules, validate, (req, res) => {
   });
 });
 
-// Update a blog post by ID
+/**
+ *  Update a blog post by ID
+ */
 app.put("/posts/:id", validationRules, validate, (req, res) => {
   const params = {
     TableName: config.database.TableName,
@@ -123,7 +137,9 @@ app.put("/posts/:id", validationRules, validate, (req, res) => {
   });
 });
 
-// Delete a blog post by ID
+/**
+ *  Delete a blog post by ID
+ */
 app.delete("/posts/:id", (req, res) => {
   const params = {
     TableName: config.database.TableName,
